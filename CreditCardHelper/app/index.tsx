@@ -1,13 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useState } from 'react';
+import * as Location from 'expo-location';
+import React, { useEffect, useState } from 'react';
 import {
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
+import MapView from 'react-native-maps';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Optimizer() {
@@ -15,6 +16,13 @@ export default function Optimizer() {
   const [category,     setCategory]   = useState('');
   const [cards,        setCards]      = useState<any[]>([]);
   const [suggested,    setSuggested]  = useState('N/A');
+  const [region,       setRegion]     = useState<null | {
+    latitude: number;
+    longitude: number;
+    latitudeDelta: number;
+    longitudeDelta: number;
+  }>(null);
+  const [loadingLoc,   setLoadingLoc] = useState(true);
   const insets = useSafeAreaInsets();
   
   const fetchCards = async () => {
@@ -57,15 +65,44 @@ export default function Optimizer() {
     setSuggested(best ? best.name : 'No card found');
   };
 
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.warn('Location permission denied');
+        setLoadingLoc(false);
+        return;
+      }
+      let loc = await Location.getCurrentPositionAsync({});
+      setRegion({
+        latitude: loc.coords.latitude,
+        longitude: loc.coords.longitude,
+        latitudeDelta: 0.02,
+        longitudeDelta: 0.02,
+      });
+      setLoadingLoc(false);
+    })();
+  }, []);
+
   /* ───── UI ───── */
   return (
     <SafeAreaView style={[styles.screen, { paddingBottom: insets.bottom }]}>
-      <ScrollView
+      {/* <ScrollView
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
-        >
+        > */}
+      <View style={styles.container}>
         <Text style={styles.header}>Credit Card Optimizer</Text>
+
+        <View style={styles.mapContainer}>
+          <MapView
+            style={styles.map}
+            region={region}
+            showsUserLocation
+            showsMyLocationButton
+          />
+        </View>
 
         {/* white card wrapper */}
         <View style={styles.card}>
@@ -94,7 +131,8 @@ export default function Optimizer() {
         </TouchableOpacity>
 
         <Text style={styles.result}>Suggested Card: {suggested}</Text>
-      </ScrollView>
+      {/* </ScrollView> */}
+      </View>
     </SafeAreaView>
   );
 }
@@ -109,7 +147,7 @@ const styles = StyleSheet.create({
   
   container: {
     paddingHorizontal: 24,
-    paddingTop: 60,
+    paddingTop: 20,
     paddingBottom: 48,
     alignItems: 'center',
   },
@@ -134,6 +172,17 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
+  },
+
+  mapContainer: {
+    width: '100%',
+    height: 200,
+    marginVertical: 24,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  map: {
+    flex: 1,
   },
 
   label: {

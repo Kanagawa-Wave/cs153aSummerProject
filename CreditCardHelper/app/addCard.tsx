@@ -84,7 +84,7 @@ export default function AddCardScreen() {
   return (
     <SafeAreaView style={styles.screen}>
       <View
-        contentContainerStyle={styles.container}
+        style={styles.container}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >

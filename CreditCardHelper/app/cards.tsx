@@ -2,12 +2,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import {
-    FlatList,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import CardItem from '../components/CardItem';
 
@@ -52,34 +52,6 @@ export default function CardsScreen() {
   /* ─────────── render ─────────── */
   const renderCard = ({ item }: { item: any }) => (
     <CardItem card={item} onRemove={removeCard} />
-    // <View style={styles.card}>
-    //   {/* left column -- all the text */}
-    //   <View style={styles.cardContent}>
-    //   <Text style={styles.cardTitle}>{item.name}</Text>
-  
-    //   <Text style={styles.label}>
-    //       Credit Line: ${item.creditLine.toLocaleString()}
-    //   </Text>
-    //   <Text style={styles.label}>
-    //       Reward Multiplier: {item.rewardMultiplier}×
-    //   </Text>
-  
-    //   <Text style={[styles.label, { marginTop: 6 }]}>Category Bonuses:</Text>
-    //   {item.categoryBonuses.map(([cat, bonus]: any, idx: number) => (
-    //       <Text key={idx} style={styles.bonus}>
-    //       • {cat}: {bonus}%
-    //       </Text>
-    //   ))}
-    //   </View>
-  
-    //   {/* right column -- full-height delete strip */}
-    //   <TouchableOpacity
-    //   style={styles.deleteStrip}
-    //   onPress={() => removeCard(item.id)}
-    //   >
-    //   <Text style={styles.deleteText}>🗑️</Text>
-    //   </TouchableOpacity>
-    // </View>
   );
 
   return (
@@ -148,7 +120,7 @@ const styles = StyleSheet.create({
   /* bottom actions */
   actions: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 20,
     left: 0,
     right: 0,
     flexDirection: 'row',
