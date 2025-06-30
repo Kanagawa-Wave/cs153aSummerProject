@@ -2,19 +2,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
 import {
+  ActionSheetIOS,
+  Keyboard,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View
 } from 'react-native';
 import MapView from 'react-native-maps';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
+const CATEGORIES = require('../assets/Categories.json') as string[];
+
 export default function Optimizer() {
+  console.log("Categorys:", CATEGORIES);
+
   const [amountSpent, setAmountSpent] = useState('');
-  const [category,     setCategory]   = useState('');
-  const [cards,        setCards]      = useState<any[]>([]);
+  const [category,     setCategory]   = useState(CATEGORIES[0]);
   const [suggested,    setSuggested]  = useState('N/A');
   const [region,       setRegion]     = useState<null | {
     latitude: number;
@@ -26,17 +33,27 @@ export default function Optimizer() {
   const insets = useSafeAreaInsets();
   
   const fetchCards = async () => {
-    try {
-      const stored = await AsyncStorage.getItem('creditCards');
-      setCards(stored ? JSON.parse(stored) : []);
-    } catch (e) {
-      console.error('Failed to fetch cards:', e);
-    }
+    const stored = await AsyncStorage.getItem('creditCards');
+    return stored ? JSON.parse(stored) : [];
   }
+
+  const openCategorySheet = () => {
+  ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: [...CATEGORIES, 'Cancel'],
+        cancelButtonIndex: CATEGORIES.length,
+      },
+      (buttonIndex) => {
+        if (buttonIndex !== CATEGORIES.length) {
+          setCategory(CATEGORIES[buttonIndex]);
+        }
+      }
+    )
+  };
   
   /* core algo */
   const getBestCard = async () => {
-    fetchCards();
+    const cards = await fetchCards();
 
     if (!cards.length) return null;
 
@@ -87,11 +104,7 @@ export default function Optimizer() {
   /* ───── UI ───── */
   return (
     <SafeAreaView style={[styles.screen, { paddingBottom: insets.bottom }]}>
-      {/* <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        > */}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container}>
         <Text style={styles.header}>Credit Card Optimizer</Text>
 
@@ -117,13 +130,14 @@ export default function Optimizer() {
             />
 
           <Text style={styles.label}>Spending Category</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="e.g., dining, groceries, gas"
-            value={category}
-            onChangeText={setCategory}
-            placeholderTextColor="#9aa0a6"
-            />
+          {/* ───── Dropdown selector ───── */}
+          {Platform.OS === 'ios' ? (
+            <TouchableOpacity style={styles.selector} onPress={openCategorySheet}>
+              <Text style={styles.selectorText}>{category}</Text>
+            </TouchableOpacity>
+          ) : (
+            <Text></Text>
+          )}
         </View>
 
         <TouchableOpacity style={styles.primaryBtn} onPress={handleSuggest}>
@@ -131,8 +145,8 @@ export default function Optimizer() {
         </TouchableOpacity>
 
         <Text style={styles.result}>Suggested Card: {suggested}</Text>
-      {/* </ScrollView> */}
       </View>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 }
@@ -224,5 +238,20 @@ const styles = StyleSheet.create({
     color: ACCENT,
     fontWeight: '600',
     textAlign: 'center',
+  },
+
+  selector: {
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 10,
+    justifyContent: 'center',
+    paddingHorizontal: 14,
+    marginBottom: 18,
+    backgroundColor: '#fff',
+  },
+  selectorText: {
+    fontSize: 16,
+    color: '#111',
   },
 });

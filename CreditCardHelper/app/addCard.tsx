@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import { RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import * as Crypto from 'expo-crypto';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -13,7 +13,15 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+type AddCardRouteParams = {
+  cardName?: string;
+  categoryBonuses?: [string, number][];
+  rewardMultiplier?: string;
+};
+
 export default function AddCardScreen() {
+  const { params } = useRoute<RouteProp<Record<string, AddCardRouteParams>, string>>();
+
   /* ─────────────── state ─────────────── */
   const [cardName, setCardName]           = useState('');
   const [category, setCategory]           = useState('');
@@ -23,15 +31,27 @@ export default function AddCardScreen() {
   const [rewardMultiplier, setRewardMultiplier] = useState('');
   const navigation = useNavigation();
 
-  /* ─────────────── helpers ─────────────── */
-  const resetTemporaryFields = () => {
-    setCardName('');
-    setCategory('');
-    setBonus('');
-    setCategoryBonuses([]);
-    setCreditLine('');
-    setRewardMultiplier('');
-  };
+  useFocusEffect(
+    useCallback(() => {
+      setCardName(params?.cardName ?? '');
+
+      let parsed: [string, number][] = [];
+      if (params?.categoryBonuses) {
+        if (Array.isArray(params.categoryBonuses)) {
+          parsed = params.categoryBonuses;
+        } else {
+          try {
+            parsed = JSON.parse(params.categoryBonuses);
+          } catch {}
+        }
+      }
+      setCategoryBonuses(parsed);
+
+      setRewardMultiplier(params?.rewardMultiplier?.toString() ?? '');
+      setCategory('');
+      setBonus('');
+    }, [params])
+  );
 
   const addBonusCategory = () => {
     if (!category.trim() || isNaN(parseFloat(bonus))) {
@@ -42,6 +62,16 @@ export default function AddCardScreen() {
     setCategory('');
     setBonus('');
   };
+
+  const resetTemporaryFields = () => {
+    setCardName('');
+    setCreditLine('');
+    setBonus('');
+    setCategory('');
+    setCategoryBonuses([]);
+    setRewardMultiplier('');
+    setCreditLine('');
+  }
 
   /* ─────────────── save ─────────────── */
   const handleSaveCard = async () => {
@@ -159,6 +189,11 @@ export default function AddCardScreen() {
         <TouchableOpacity style={styles.primaryButton} onPress={handleSaveCard}>
           <Text style={styles.primaryText}>Save Card</Text>
         </TouchableOpacity>
+
+        {/* ── CANCEL BUTTON ── */}
+        <TouchableOpacity style={styles.cancelButton} onPress={() => {navigation.navigate('cards');}}>
+          <Text style={styles.cancelText}>Cancel</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -247,11 +282,26 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 12,
     alignItems: 'center',
+    marginBottom: 16,
   },
   primaryText: {
     color: '#fff',
     fontSize: 17,
     fontWeight: '700',
     letterSpacing: 0.3,
+  },
+
+  cancelButton: {
+    paddingVertical: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: ACCENT,
+    backgroundColor: LIGHT,
+  },
+  cancelText: {
+    color: ACCENT,
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

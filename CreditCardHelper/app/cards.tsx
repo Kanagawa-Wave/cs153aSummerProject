@@ -47,7 +47,7 @@ export default function CardsScreen() {
     return unsub;
   }, [navigation]);
 
-  const handleAddCard = () => navigation.navigate('addCard');
+  const handleAddCard = () => navigation.navigate('selector');
 
   /* ─────────── render ─────────── */
   const renderCard = ({ item }: { item: any }) => (

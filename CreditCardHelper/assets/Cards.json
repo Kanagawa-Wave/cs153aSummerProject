@@ -1,0 +1,301 @@
+[
+  {
+    "id": "",
+    "name": "Amex Platinum",
+    "categoryBonuses": [
+      ["flights", 5],
+      ["hotels", 5]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1.5
+  },
+  {
+    "id": "",
+    "name": "Amex Gold",
+    "categoryBonuses": [
+      ["restaurant", 4],
+      ["grocery", 4]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1.5
+  },
+  {
+    "id": "",
+    "name": "Amex Green",
+    "categoryBonuses": [
+      ["travel", 3],
+      ["transit", 3],
+      ["restaurant", 3]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1.5
+  },
+  {
+    "id": "",
+    "name": "Amex Blue Cash Preferred",
+    "categoryBonuses": [
+      ["grocery", 6],
+      ["streaming", 6],
+      ["transit", 3],
+      ["gas", 3]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1
+  },
+  {
+    "id": "",
+    "name": "Amex Blue Cash Everyday",
+    "categoryBonuses": [
+      ["grocery", 3],
+      ["gas", 3],
+      ["online retail", 3]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1
+  },
+
+  {
+    "id": "",
+    "name": "Chase Sapphire Reserve",
+    "categoryBonuses": [
+      ["restaurant", 3],
+      ["travel", 3]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1.6
+  },
+  {
+    "id": "",
+    "name": "Chase Sapphire Preferred",
+    "categoryBonuses": [
+      ["restaurant", 3],
+      ["travel", 3],
+      ["online grocery", 3]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1.6
+  },
+  {
+    "id": "",
+    "name": "Chase Freedom Flex",
+    "categoryBonuses": [
+      ["rotating categories", 5],
+      ["restaurant", 3],
+      ["drugstores", 3]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1.6
+  },
+  {
+    "id": "",
+    "name": "Chase Freedom Unlimited",
+    "categoryBonuses": [
+      ["restaurant", 3],
+      ["drugstores", 3],
+      ["travel (portal)", 5]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1.6
+  },
+
+  {
+    "id": "",
+    "name": "Capital One Venture X",
+    "categoryBonuses": [
+      ["all", 2],
+      ["hotels (portal)", 10],
+      ["rental cars (portal)", 10],
+      ["flights (portal)", 5]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 2
+  },
+  {
+    "id": "",
+    "name": "Capital One Venture",
+    "categoryBonuses": [
+      ["all", 2]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1.6
+  },
+  {
+    "id": "",
+    "name": "Capital One VentureOne",
+    "categoryBonuses": [
+      ["all", 1.25]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1.6
+  },
+  {
+    "id": "",
+    "name": "Capital One Savor",
+    "categoryBonuses": [
+      ["restaurant", 4],
+      ["entertainment", 4],
+      ["grocery", 3],
+      ["streaming", 4]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1
+  },
+  {
+    "id": "",
+    "name": "Capital One SavorOne",
+    "categoryBonuses": [
+      ["restaurant", 3],
+      ["entertainment", 3],
+      ["grocery", 3],
+      ["streaming", 3]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1
+  },
+  {
+    "id": "",
+    "name": "Capital One Quicksilver",
+    "categoryBonuses": [
+      ["all", 1.5]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1.6
+  },
+
+  {
+    "id": "",
+    "name": "Citi Strata Premier",
+    "categoryBonuses": [
+      ["restaurant", 3],
+      ["grocery", 3],
+      ["gas", 3],
+      ["travel", 3],
+      ["hotels", 3]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1
+  },
+  {
+    "id": "",
+    "name": "Citi Double Cash",
+    "categoryBonuses": [
+      ["all", 2]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 2
+  },
+  {
+    "id": "",
+    "name": "Citi Rewards+",
+    "categoryBonuses": [
+      ["grocery", 2],
+      ["gas", 2]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1
+  },
+  {
+    "id": "",
+    "name": "Citi Custom Cash",
+    "categoryBonuses": [
+      ["top eligible category (up to $500/mo)", 5]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1
+  },
+
+  {
+    "id": "",
+    "name": "Discover it Cash Back",
+    "categoryBonuses": [
+      ["rotating categories", 5]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1
+  },
+  {
+    "id": "",
+    "name": "Discover it Miles",
+    "categoryBonuses": [
+      ["all", 1.5]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1.5
+  },
+
+  {
+    "id": "",
+    "name": "BoA Premium Rewards",
+    "categoryBonuses": [
+      ["restaurant", 2],
+      ["travel", 2]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1
+  },
+  {
+    "id": "",
+    "name": "BoA Customized Cash Rewards",
+    "categoryBonuses": [
+      ["chosen category", 3],
+      ["grocery", 2],
+      ["wholesale clubs", 2]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1
+  },
+  {
+    "id": "",
+    "name": "BoA Travel Rewards",
+    "categoryBonuses": [
+      ["all", 1.5]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1.5
+  },
+
+  {
+    "id": "",
+    "name": "Wells Fargo Autograph",
+    "categoryBonuses": [
+      ["restaurant", 3],
+      ["travel", 3],
+      ["transit", 3],
+      ["streaming", 3],
+      ["phone", 3],
+      ["gas", 3]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1.5
+  },
+  {
+    "id": "",
+    "name": "Wells Fargo Active Cash",
+    "categoryBonuses": [
+      ["all", 2]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1
+  },
+
+  {
+    "id": "",
+    "name": "US Bank Altitude Reserve",
+    "categoryBonuses": [
+      ["mobile wallet", 3],
+      ["travel", 3]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1.5
+  },
+  {
+    "id": "",
+    "name": "US Bank Cash+",
+    "categoryBonuses": [
+      ["two chosen categories (up to $2k/qtr)", 5],
+      ["one everyday category", 2]
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 1
+  }
+]
