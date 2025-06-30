@@ -33,6 +33,9 @@ export default function AddCardScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      if (params.cardName === "Add Card From Scratch") {
+        setCardName('');
+      }
       setCardName(params?.cardName ?? '');
 
       let parsed: [string, number][] = [];

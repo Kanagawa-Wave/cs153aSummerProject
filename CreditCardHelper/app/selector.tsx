@@ -49,6 +49,7 @@ export default function SelectCardScreen() {
         keyExtractor={(item) => item.name}
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
   );

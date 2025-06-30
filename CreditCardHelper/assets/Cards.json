@@ -1,6 +1,15 @@
 [
   {
     "id": "",
+    "name": "Add Card From Scratch",
+    "categoryBonuses": [
+    ],
+    "creditLine": 0,
+    "rewardMultiplier": 0
+  },
+
+  {
+    "id": "",
     "name": "Amex Platinum",
     "categoryBonuses": [
       ["flights", 5],
