@@ -3,6 +3,7 @@ import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
 import {
   ActionSheetIOS,
+  ActivityIndicator,
   Keyboard,
   Platform,
   StyleSheet,
@@ -16,10 +17,14 @@ import MapView from 'react-native-maps';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const CATEGORIES = require('../assets/Categories.json') as string[];
+const OSM_TYPE_TO_CATEGORY = {
+  supermarket: 'grocery',
+  grocery: 'grocery',
+  cafe: 'restaurant',
+  restaurant: 'restaurant',
+};
 
 export default function Optimizer() {
-  console.log("Categorys:", CATEGORIES);
-
   const [amountSpent, setAmountSpent] = useState('');
   const [category,     setCategory]   = useState(CATEGORIES[0]);
   const [suggested,    setSuggested]  = useState('N/A');
@@ -30,12 +35,9 @@ export default function Optimizer() {
     longitudeDelta: number;
   }>(null);
   const [loadingLoc,   setLoadingLoc] = useState(true);
+  const [osmType, setOsmType] = useState<string>('');
+  const [loading,      setLoading]    = useState(false);
   const insets = useSafeAreaInsets();
-  
-  const fetchCards = async () => {
-    const stored = await AsyncStorage.getItem('creditCards');
-    return stored ? JSON.parse(stored) : [];
-  }
 
   const openCategorySheet = () => {
   ActionSheetIOS.showActionSheetWithOptions(
@@ -51,24 +53,38 @@ export default function Optimizer() {
     )
   };
   
-  /* core algo */
-  const getBestCard = async () => {
-    const cards = await fetchCards();
+ // Fetch saved cards
+  const fetchCards = async () => {
+    const stored = await AsyncStorage.getItem('creditCards');
+    return stored ? JSON.parse(stored) : [];
+  };
 
+  // Reverse geocode via OSM Nominatim
+  const getOsmType = async ({ latitude, longitude }: { latitude: number; longitude: number }) => {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
+    const res = await fetch(url, { headers: { 'User-Agent': 'OptimizerApp/1.0' } });
+    if (!res.ok) throw new Error(`OSM error ${res.status}`);
+    const data = await res.json();
+    // e.g. data.type = 'fuel', data.category = 'amenity'
+    return data.type;
+  };
+
+  // Core: find best card given a spending category
+  const getBestCardFor = async (targetCat: string) => {
+    const cards = await fetchCards();
     if (!cards.length) return null;
 
-    const target = category.trim().toLowerCase();
-    
     let bestCard: any = null;
     let bestScore = -Infinity;
-    
+    const target = targetCat.trim().toLowerCase();
+
     for (const card of cards) {
       const bonusEntry = card.categoryBonuses.find(
         ([cat]: [string, number]) => cat.toLowerCase() === target
       );
-      const bonus = bonusEntry ? bonusEntry[1] : 1; // default 1×
+      const bonus = bonusEntry ? bonusEntry[1] : 1;
       const score = bonus * card.rewardMultiplier;
-      
+
       if (score > bestScore) {
         bestScore = score;
         bestCard  = card;
@@ -76,15 +92,34 @@ export default function Optimizer() {
     }
     return bestCard;
   };
-  
+
+  // Handle Suggest: try location-based override first
   const handleSuggest = async () => {
-    const best = await getBestCard();
-    setSuggested(best ? best.name : 'No card found');
+    setLoading(true);
+    await updateLocation();
+    try {
+      if (region) {
+        // detect merchant type via OSM
+        const osmType = await getOsmType(region);
+        setOsmType(osmType);
+        const mapped = OSM_TYPE_TO_CATEGORY[osmType];
+        if (mapped) {
+          setCategory(mapped);
+        }
+        else {
+          setCategory('all'); // default fallback
+        }
+      }
+      const best = await getBestCardFor(category);
+      setSuggested(best ? best.name : `N/A`);
+    } catch (err: any) {
+      setSuggested(`Error: ${err.message}`);
+    }
+    setLoading(false);
   };
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
+  const updateLocation = async() => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         console.warn('Location permission denied');
         setLoadingLoc(false);
@@ -98,10 +133,22 @@ export default function Optimizer() {
         longitudeDelta: 0.02,
       });
       setLoadingLoc(false);
-    })();
-  }, []);
+  };
+
+  useEffect(() => {updateLocation();}, []);
 
   /* ───── UI ───── */
+  if (loading) {
+    return (
+      <SafeAreaView style={[styles.screen, { paddingBottom: insets.bottom }]}>        
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" />
+          <Text style={styles.loadingText}>Loading location...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={[styles.screen, { paddingBottom: insets.bottom }]}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -116,6 +163,7 @@ export default function Optimizer() {
             showsMyLocationButton
           />
         </View>
+        <Text style={styles.label}>Your Location Type: {osmType}</Text>
 
         {/* white card wrapper */}
         <View style={styles.card}>
@@ -158,6 +206,9 @@ const TEXT   = '#111';
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: LIGHT },
+
+  loadingContainer: { flex:1, justifyContent:'center', alignItems:'center' },
+  loadingText: { marginTop:12, fontSize:16, color:TEXT },
   
   container: {
     paddingHorizontal: 24,
