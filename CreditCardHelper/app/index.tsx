@@ -7,6 +7,7 @@ import {
   Keyboard,
   Platform,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -17,12 +18,7 @@ import MapView from 'react-native-maps';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const CATEGORIES = require('../assets/Categories.json') as string[];
-const OSM_TYPE_TO_CATEGORY = {
-  supermarket: 'grocery',
-  grocery: 'grocery',
-  cafe: 'restaurant',
-  restaurant: 'restaurant',
-};
+const OSM_TYPE_TO_CATEGORY = require('../assets/OSMTypeToCategory.json');
 
 export default function Optimizer() {
   const [amountSpent, setAmountSpent] = useState('');
@@ -37,6 +33,7 @@ export default function Optimizer() {
   const [loadingLoc,   setLoadingLoc] = useState(true);
   const [osmType, setOsmType] = useState<string>('');
   const [loading,      setLoading]    = useState(false);
+  const [useLocation, setUseLocation] = useState(true);
   const insets = useSafeAreaInsets();
 
   const openCategorySheet = () => {
@@ -65,7 +62,6 @@ export default function Optimizer() {
     const res = await fetch(url, { headers: { 'User-Agent': 'OptimizerApp/1.0' } });
     if (!res.ok) throw new Error(`OSM error ${res.status}`);
     const data = await res.json();
-    // e.g. data.type = 'fuel', data.category = 'amenity'
     return data.type;
   };
 
@@ -96,25 +92,21 @@ export default function Optimizer() {
   // Handle Suggest: try location-based override first
   const handleSuggest = async () => {
     setLoading(true);
-    await updateLocation();
-    try {
+    if (useLocation) {
+      await updateLocation();
       if (region) {
-        // detect merchant type via OSM
-        const osmType = await getOsmType(region);
-        setOsmType(osmType);
-        const mapped = OSM_TYPE_TO_CATEGORY[osmType];
-        if (mapped) {
-          setCategory(mapped);
-        }
-        else {
-          setCategory('all'); // default fallback
+        try {
+          const type = await getOsmType(region);
+          setOsmType(type);
+          const mapped = OSM_TYPE_TO_CATEGORY[type];
+          setCategory(mapped || 'all');
+        } catch (err: any) {
+          console.warn(err);
         }
       }
-      const best = await getBestCardFor(category);
-      setSuggested(best ? best.name : `N/A`);
-    } catch (err: any) {
-      setSuggested(`Error: ${err.message}`);
     }
+    const best = await getBestCardFor(category);
+    setSuggested(best ? best.name : 'N/A');
     setLoading(false);
   };
 
@@ -163,7 +155,7 @@ export default function Optimizer() {
             showsMyLocationButton
           />
         </View>
-        <Text style={styles.label}>Your Location Type: {osmType}</Text>
+        {/* <Text>Your Location Type: {osmType}</Text> */}
 
         {/* white card wrapper */}
         <View style={styles.card}>
@@ -186,13 +178,22 @@ export default function Optimizer() {
           ) : (
             <Text></Text>
           )}
+          <View style={styles.toggleRow}>
+                <Text style={styles.label}>Auto-detect category</Text>
+                <Switch
+                  value={useLocation}
+                  onValueChange={setUseLocation}
+                  trackColor={{ false: '#ccc', true: ACCENT }}
+                  thumbColor="#fff"
+                />
+          </View>
         </View>
 
         <TouchableOpacity style={styles.primaryBtn} onPress={handleSuggest}>
           <Text style={styles.primaryText}>Suggest Best Card</Text>
         </TouchableOpacity>
 
-        <Text style={styles.result}>Suggested Card: {suggested}</Text>
+        <Text style={styles.result}>{suggested}</Text>
       </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>
@@ -242,7 +243,7 @@ const styles = StyleSheet.create({
   mapContainer: {
     width: '100%',
     height: 200,
-    marginVertical: 24,
+    marginVertical: 12,
     borderRadius: 16,
     overflow: 'hidden',
   },
@@ -267,9 +268,16 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
 
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 12,
+  },
+
   /* button */
   primaryBtn: {
-    marginTop: 28,
+    marginTop: 24,
     width: '100%',
     backgroundColor: ACCENT,
     borderRadius: 12,
@@ -284,7 +292,7 @@ const styles = StyleSheet.create({
   },
 
   result: {
-    marginTop: 40,
+    marginTop: 24,
     fontSize: 18,
     color: ACCENT,
     fontWeight: '600',
